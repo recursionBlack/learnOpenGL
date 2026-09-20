@@ -1,0 +1,25 @@
+# clang-format style for the LearnOpenGL TEST project.
+#
+# Used by the C/C++ extension's formatter (format-on-save). To apply it from a
+# terminal:  clang-format -i src/*.cpp src/*.c
+
+BasedOnStyle: LLVM
+
+# Match the 4-space indentation used throughout the tutorial code.
+IndentWidth: 4
+TabWidth: 4
+UseTab: Never
+ColumnLimit: 100
+
+# Tutorial style writes `GLFWwindow* window` (pointer on the left).
+PointerAlignment: Left
+DerivePointerAlignment: false
+
+# CRITICAL: never reorder #include lines.
+# GLAD must be included BEFORE GLFW; sorting them alphabetically (the default)
+# would put <GLFW/glfw3.h> first, making GLFW pull in <GL/gl.h> and clash with
+# GLAD -- which breaks the build.
+SortIncludes: Never
+
+# Keep tiny accessors on one line.
+AllowShortFunctionsOnASingleLine: Inline
