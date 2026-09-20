@@ -1,5 +1,5 @@
 # ============================================================================
-#  LearnOpenGL - TEST project
+#  LearnOpenGL - learnOpenGL project
 #
 #  Links the GLFW library that lives ONE LEVEL UP from this folder:
 #
@@ -10,7 +10,7 @@
 #      |   |-- include/glad/glad.h
 #      |   `-- libs/glfw3.lib       (x64 Release, /MD)
 #      |       libs/glfw3d.lib      (x64 Debug,   /MDd)
-#      `-- TEST/                    <- THIS project
+#      `-- learnOpenGL/              <- THIS project
 #          |-- CMakeLists.txt
 #          `-- src/main.cpp
 #
