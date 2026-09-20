@@ -52,32 +52,46 @@ int main() {
     // 注册视口变化监听函数
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
-    // 定义顶点数组，位于Cpu上
     // clang-format off
+    // 定义顶点数组，即VBO数据，位于Cpu上
     float vertices[] = {
-        -0.5f, -0.5f, 0.0f,
-         0.5f, -0.5f, 0.0f,
-         0.0f,  0.5f, 0.0f
+        0.5f, 0.5f, 0.0f,   // 右上角
+        0.5f, -0.5f, 0.0f,  // 右下角
+        -0.5f, -0.5f, 0.0f, // 左下角
+        -0.5f, 0.5f, 0.0f   // 左上角
+    };
+
+    // EBO数据
+    unsigned int indices[] = {  // 注意索引从0开始
+        0, 1, 3,    // 第一个三角形
+        1, 2, 3     // 第二个三角形
     };
     // clang-format on
 
     // 创建VBO（顶点缓冲对象）位于GPU上，
-    unsigned int VBO, VAO;
-    glGenBuffers(1, &VBO); // id
+    unsigned int VBO, VAO, EBO;
     glGenVertexArrays(1, &VAO);
+    glGenBuffers(1, &VBO); // id
+    glGenBuffers(1, &EBO);
     // 绑定VAO对象
     glBindVertexArray(VAO);
 
-    // 绑定缓冲， GL_ARRAY_BUFFER是缓冲区用途的类型enum
+    // 绑定VBO对象， GL_ARRAY_BUFFER是缓冲区用途的类型enum
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    // 绑定EBO对象
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 
     // 填充数据，把cpu数据填充到GPU上，
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    // 填充EBO数据
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
-    // 设置顶点属性指针 一句话区别：**VBO 管 "数据存了什么"，顶点属性指针管 "GPU 怎么读这些数据"。**
+    // 设置顶点属性指针 一句话区别：**VBO 管 "数据存了什么"，顶点属性指针管 "GPU
+    // 怎么读这些数据"。**
     //**VBO = 一串没有格式的原始数字**
     // 顶点属性指针 = 给 GPU 的 "读表规则"
-    // 告诉 GPU：**"这堆数字，每 6 个算一个顶点；前 3 个是位置 (x,y,z)，后 3 个是颜色 (r,g,b)"**。
+    // 告诉 GPU：**"这堆数字，每 6 个算一个顶点；前 3 个是位置 (x,y,z)，后 3 个是颜色
+    // (r,g,b)"**。
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
@@ -153,9 +167,7 @@ int main() {
 
         glUseProgram(shaderProgram);
         glBindVertexArray(VAO);
-        glDrawArrays(GL_POINTS, 0, 3);
-        glDrawArrays(GL_LINE_LOOP, 0, 3);
-        // glDrawArrays(GL_TRIANGLES, 0, 3);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
         glBindVertexArray(0);
 
@@ -164,6 +176,11 @@ int main() {
         // 监听用户输入事件
         glfwPollEvents();
     }
+
+    glDeleteVertexArrays(1, &VAO);
+    glDeleteBuffers(1, &VBO);
+    glDeleteBuffers(1, &EBO);
+    glDeleteProgram(shaderProgram);
 
     // 释放资源
     glfwTerminate();
