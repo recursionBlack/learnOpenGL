@@ -10,12 +10,14 @@ const char* vertexShaderSource = "#version 330 core\n"
                                  "layout (location = 0) in vec3 aPos;\n"
                                  "void main()\n"
                                  "{\n"
-                                 "gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0f);"
+                                 "gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0f);\n"
+                                 "gl_PointSize = 10.0f;\n"
                                  "}\n";
 const char* fragmentShaderSource = "#version 330 core\n"
                                    "out vec4 FragColor;\n"
+                                   "void main()\n"
                                    "{\n"
-                                   "FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);"
+                                   "FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
                                    "}\n";
 
 int main() {
@@ -44,6 +46,8 @@ int main() {
 
     // 设置视口
     glViewport(0, 0, 800, 600);
+    // 启用点尺寸大小
+    glEnable(GL_PROGRAM_POINT_SIZE);
 
     // 注册视口变化监听函数
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
@@ -58,8 +62,11 @@ int main() {
     // clang-format on
 
     // 创建VBO（顶点缓冲对象）位于GPU上，
-    unsigned int VBO;
+    unsigned int VBO, VAO;
     glGenBuffers(1, &VBO); // id
+    glGenVertexArrays(1, &VAO);
+    // 绑定VAO对象
+    glBindVertexArray(VAO);
 
     // 绑定缓冲， GL_ARRAY_BUFFER是缓冲区用途的类型enum
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
@@ -81,6 +88,9 @@ int main() {
     VAO相当于顶点属性和EBO的array
     EBO相当于，要画一个图形，应该使用哪些顶点，有点像三角面片里的顶点索引，
     */
+
+    // 解绑VAO
+    glBindVertexArray(0);
 
     // 创建顶点和片段着色器
     unsigned int vertexShader, fragmentShader;
@@ -140,6 +150,14 @@ int main() {
         // 渲染指令
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
+
+        glUseProgram(shaderProgram);
+        glBindVertexArray(VAO);
+        glDrawArrays(GL_POINTS, 0, 3);
+        glDrawArrays(GL_LINE_LOOP, 0, 3);
+        // glDrawArrays(GL_TRIANGLES, 0, 3);
+
+        glBindVertexArray(0);
 
         // 交换颜色缓冲，
         glfwSwapBuffers(window);
